@@ -1,16 +1,19 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix
+
+
 def classify(tree, x_point):
     index = 0
-    pt = np.append(x_point, 1).reshape(3, 1)
+    # appending 1 for bias and reshaping to len(x_point) +1 for bias in to vertical
+    pt = np.append(x_point, 1).reshape(len(x_point)+1, 1)
 
     while True:
-        r = tree[index][:3].dot(pt)
+        r = tree[index][:len(x_point)+1].dot(pt)
         if r > 0:
-            index = tree[index][3].astype(int)
+            index = tree[index][-2].astype(int)
         else:
-            index = tree[index][4].astype(int)
+            index = tree[index][-1].astype(int)
         if index == 0:
             break;
 

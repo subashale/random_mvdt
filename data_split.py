@@ -19,6 +19,7 @@ def entropy(a, b):
 def check_positive_negative(points, label):
     point_positive = 0
     point_negative = 0
+    
     for i in points:
         if label[i] == 1:
             point_positive = point_positive + 1

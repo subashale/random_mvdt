@@ -10,7 +10,7 @@ import data_split as ds
 import prediction as pred
 
 
-df = pd.read_csv("data/small.csv")
+df = pd.read_csv("data/circle.csv")
 X = np.array(df[df.columns[:-1]].values.tolist(), dtype=np.float64)
 label = np.array(df[df.columns[-1]].values.tolist())
 index = 0
@@ -50,7 +50,7 @@ for depth in range(tree_depth):
             n = random.choice(neg)
 
             # getting parameters from split
-            gain, pos_side, neg_side, theta = ds.split_data(X2, label2, pos, neg, n, p)
+            gain, pos_side, neg_side, theta = ds.split_data(X2, label2, pos, neg, p, n)
             # print(gain)
 
             # checking for best gain and setting rest parameters of it
@@ -60,7 +60,8 @@ for depth in range(tree_depth):
                 best_neg_side = neg_side
                 best_theta = theta
 
-                # dviz.viz_data_with_line_np(best_theta, to_split)
+                # dviz.viz_data_with_line(best_theta, to_split)
+            # dviz.viz_data_with_line(best_theta, to_split)
 
         # building tree
         if depth != tree_depth:
@@ -99,15 +100,18 @@ for depth in range(tree_depth):
                     tmp_split = [right_x, right_label, next_free]
                     # tmp_split = pd_concat(right_x, right_label)
 
-        tree[to_split[2]][:3] = best_theta.T
+            tree[to_split[2]][:3] = best_theta.T
 
         # ploting graph
-        dviz.viz_data_with_line_np(best_theta, to_split)
 
+        dviz.viz_data_with_line_np(best_theta, to_split)
+        # dviz.scatter_plot_line(best_theta, to_split)
+
+    # dviz.viz_data_with_line(best_theta, to_split)
     to_split = tmp_split
 
-
-print(pred.predict(tree, X[3]))
+print(pred.predict(tree, X[4]))
+print(pred.predict(tree, X[5]))
 
 y_pred = pred.predict(tree, X)
 print(classification_report(label, y_pred, labels=[0, 1]))
