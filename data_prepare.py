@@ -5,8 +5,7 @@ import pandas
 # this function is responsible for giving data to split
 
 def pos_neg_giver(split_list):
-    # all feature are in index 0 and 1 has class label
-
+    # all feature are in index 0 and 1 has class label    
     # get index of category(0, 1) from label
     idx_1 = np.where(split_list[1] == 1)
     idx_0 = np.where(split_list[1] == 0)

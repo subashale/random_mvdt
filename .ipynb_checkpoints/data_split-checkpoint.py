@@ -58,7 +58,7 @@ def split_data(X, label, pos, neg, p, n):
     # reshape in to (2*1)
     center = center.reshape((len(center), -1))
 
-    #b = -mx + y
+    #b = -mx + y, y = 0
     bias = -v.dot(center)
 
     # all parameters as theta
@@ -74,6 +74,10 @@ def split_data(X, label, pos, neg, p, n):
     # way of finding data from decision line
     # it remains as y_hat and finds left and right value with y = mx+b
     # now we have y_hat
+    # So just taking (theta' * X') = (X * theta)' this, transposed, gives ((X * theta)')' 
+    # which is equal to X * theta. –    direction = with_one_combine.dot(theta)
+    # https://stackoverflow.com/questions/22625396/cost-function-linear-regression-trying-to-avoid-hard-coding-theta-octave/31843249
+
     direction = with_one_combine.dot(theta)
 
     # print all calculation

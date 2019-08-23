@@ -17,6 +17,16 @@ def viz_data(df):
 
     plt.show()
 
+def DDScatterDFSns(column1, column2, df):
+    # assume last column is dependable variable
+    sns.lmplot(x=[key for key in df.columns[[column1]]][0], y=[key for key in df.columns[[column2]]][0], 
+               data=df, fit_reg=False, hue=[key for key in df.columns[[-1]]][0], legend=False)
+
+    # Move the legend to an empty part of the plot
+    plt.legend(loc='lower right')
+
+    plt.show()
+
 # plotting using numpy data
 def viz_data_np(split_list):
     #df.y = df.label.astype(str)
@@ -120,7 +130,8 @@ def viz_data_with_line_np(theta, split_list):
     #x = (-theta_f[2] - theta_f[1] * y) / theta_f[0]
 
     #ref #https://towardsdatascience.com/building-a-logistic-regression-in-python-301d27367c24
-
+    #https://stackoverflow.com/questions/42704698/logistic-regression-plotting-decision-boundary-from-theta
+    
     x1_line = np.arange(int(round(split_list[0].min())), int(round(split_list[0].max())) , 0.1)
     x2_line = (-theta_f[2] - theta_f[0] * x1_line) / theta_f[1]
     # x2 = - (theta_f[2] + np.dot(theta_f[0], x)) / theta_f[1]
@@ -141,7 +152,9 @@ def viz_data_with_line_np(theta, split_list):
     colormap = np.array(['#277CB6', '#FF983E'])
 
     plt.scatter(x1, x2, c=colormap[categories])
-
+    
+    plt.show()
+    
 def viz_data_with_line(theta, split_list):
     # this will show line separates data points
     # Plotting scatter and a Line
