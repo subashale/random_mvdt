@@ -119,7 +119,7 @@ def scatter_plot_line(theta, split_list):
     plt.legend()
     #plt.show()
 
-
+# for combine split 
 def viz_data_with_line_np(theta, split_list):
     # this will show decision boundary as line with scatter plot
 
@@ -142,8 +142,8 @@ def viz_data_with_line_np(theta, split_list):
     x1 = split_list[0][:, 0]
     x2 = split_list[0][:, 1]
 
-    X_min_max = [int(round(x1.min()-6)), int(round(x1.max()+6))]
-    X2_min_max = [int(round(x2.min() - 6)), int(round(x2.max() + 6))]
+    X_min_max = [int(round(x1.min()-10)), int(round(x1.max()+10))]
+    X2_min_max = [int(round(x2.min() - 10)), int(round(x2.max() + 10))]
     plt.xlim(X_min_max[0], X_min_max[1])
     plt.ylim(X2_min_max[0], X2_min_max[1])
 
@@ -153,8 +153,9 @@ def viz_data_with_line_np(theta, split_list):
 
     plt.scatter(x1, x2, c=colormap[categories])
     
-    plt.show()
-    
+    #plt.show()
+
+# for individual splits
 def viz_data_with_line(theta, split_list):
     # this will show line separates data points
     # Plotting scatter and a Line
