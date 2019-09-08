@@ -8,7 +8,7 @@ def classify(tree, x_point):
     # appending 1 for bias and reshaping to len(x_point) +1 for bias in to vertical
     pt = np.append(x_point, 1).reshape(len(x_point)+1, 1)
 
-    while True:
+    while index <= len(tree):
         r = tree[index][:len(x_point)+1].dot(pt)
         if r > 0:
             index = tree[index][-2].astype(int)

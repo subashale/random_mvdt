@@ -142,18 +142,18 @@ def viz_data_with_line_np(theta, split_list):
     x1 = split_list[0][:, 0]
     x2 = split_list[0][:, 1]
 
-    X_min_max = [int(round(x1.min()-10)), int(round(x1.max()+10))]
-    X2_min_max = [int(round(x2.min() - 10)), int(round(x2.max() + 10))]
+    X_min_max = [int(round(x1.min()-6)), int(round(x1.max()+6))]
+    X2_min_max = [int(round(x2.min() - 6)), int(round(x2.max() + 6))]
     plt.xlim(X_min_max[0], X_min_max[1])
     plt.ylim(X2_min_max[0], X2_min_max[1])
 
     # scatter plot
     categories = split_list[1]
     colormap = np.array(['#277CB6', '#FF983E'])
-
-    plt.scatter(x1, x2, c=colormap[categories])
+        
+    plt.scatter(x1, x2, c=colormap[categories])    
     
-    #plt.show()
+    plt.show()
 
 # for individual splits
 def viz_data_with_line(theta, split_list):
@@ -166,7 +166,7 @@ def viz_data_with_line(theta, split_list):
     theta_f = list(theta.flat)
     # Calculating line values x and y
     y = np.arange(-10, 10, 0.1)
-    x = (theta_f[2] - theta_f[1] * y) / theta_f[0]
+    x = (-theta_f[2] - theta_f[1] * y) / theta_f[0]
 
     plt.figure(figsize=(7,8))
 
