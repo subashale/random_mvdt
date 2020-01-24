@@ -35,9 +35,9 @@ making other setting default
 
 # Evaluation
 Performance of above approch is compared with scikit-learn based decision tree based on following points.
-1.Big0 (Time complexity): Algorithm performance
+1. Big0 (Time complexity): Algorithm performance
 2. Tree attributes
-  i.Max_depth, inner_nodes, leaf_nodes, all_nodes
+  i. Max_depth, inner_nodes, leaf_nodes, all_nodes
   ii. Average max depth, min depth
 3. Evaluation matrix(train/test)
   i. Accuracy, precision, recall, f1
