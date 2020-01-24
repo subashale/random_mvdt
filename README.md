@@ -3,7 +3,7 @@ Random feature selection approch on multivariate decision tree.
 
 A univariate decision tree is good it self but when data can be separate linearly its better to use multivariate concept. In multivariate we take all or combination of features to make decision boundary until all or some criteria meets. 
 
-In this project we try two different way of achieving linear separation on normal decision tree.   
+In this project we try two different way of achieving linear separation on normal decision tree. These two algorithms performance will be compared with scikit-learn based decision tree. All datasets has only two classes.    
 
 # Approach
 1. First we use normal deterministic way of to find coefficient based on RANSAC algorithm(rs_mvdt). https://en.wikipedia.org/wiki/Random_sample_consensus
