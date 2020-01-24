@@ -19,7 +19,7 @@ We test on binary text classifcation problem. We use Doc2vec embeddings to creat
 2. Quora Insincere Questions: https://www.kaggle.com/c/quora-insincere-questions-classification/data
 
 # Setting
-1. datasets = "2newgroup,imdb,quora"
+1. datasets = "imdb,quora"
 2. k = 5
 3. vector_sizes = [10, 25, 50, 75, 100]
 4. algorithms_list = ['lr_mvdt', 'rs_mvdt'] # ['cart']
