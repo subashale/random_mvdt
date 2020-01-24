@@ -19,14 +19,14 @@ We test on binary text classifcation problem. We use Doc2vec embeddings to creat
 2. Quora Insincere Questions: https://www.kaggle.com/c/quora-insincere-questions-classification/data
 
 # Setting
-datasets = "2newgroup,imdb,quora"
-k = 5
-vector_sizes = [10, 25, 50, 75, 100]
-algorithms_list = ['lr_mvdt', 'rs_mvdt'] # ['cart']
-epochs_list = [100, 300, 500, 800, 1000]
-n_features_list = [2, 5, 10, 20, all]
+1. datasets = "2newgroup,imdb,quora"
+2. k = 5
+3. vector_sizes = [10, 25, 50, 75, 100]
+4. algorithms_list = ['lr_mvdt', 'rs_mvdt'] # ['cart']
+5. epochs_list = [100, 300, 500, 800, 1000]
+6. n_features_list = [2, 5, 10, 20, all]
 #depth_list = [3, 6, 9, 12, 15]
-min_leaf_point_list = [5, 10, 15, 20, 30]
+7. min_leaf_point_list = [5, 10, 15, 20, 30]
 
 making other setting default
 1. CART (criterion="entropy")
