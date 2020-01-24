@@ -40,13 +40,13 @@ Performance of above approch is compared with scikit-learn based decision tree b
 	1. max_depth, inner_nodes, leaf_nodes, all_nodes
 	2. average max depth, min depth
 3. Evaluation matrix(train/test)
-  i. Accuracy, precision, recall, f1
-  ii. Average of all
+ 	1. Accuracy, precision, recall, f1
+ 	2. Average of all
 4. Runtime: Training time
 5. Hyperparameter
-  i. N combination of features
-  ii. Epochs
-  iii. Min leaf point
+	1. N combination of features
+	2. Epochs
+	3. Min leaf point
 
 # Requirement
 This project can be run as script and jupyter notebook
