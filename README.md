@@ -53,7 +53,7 @@ This project can be run as script and jupyter notebook
 1. Numpy
 2. Pandas
 3. Scikit-learn
-4. Matplotlib
+4. Gensim
 
 # Execuite script
 1. K_fold split of both datasets: split_data(datasets, k)
