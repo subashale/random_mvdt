@@ -17,6 +17,16 @@ We test on binary text classifcation problem. We use Doc2vec embeddings to creat
 1. IMDB review: https://www.kaggle.com/lakshmi25npathi/imdb-dataset-of-50k-movie-reviews
 2. Quora Insincere Questions: https://www.kaggle.com/c/quora-insincere-questions-classification/data
 
+# Setting
+datasets = "2newgroup,imdb,quora"
+k = 5
+vector_sizes = [10, 25, 50, 75, 100]
+algorithms_list = ['lr_mvdt', 'rs_mvdt'] # ['cart']
+epochs_list = [100, 300, 500, 800, 1000]
+n_features_list = [2, 5, 10, 20, all]
+#depth_list = [3, 6, 9, 12, 15]
+min_leaf_point_list = [5, 10, 15, 20, 30]
+
 # Evaluation
 Performance of above approch is compared with scikit-learn based decision tree based on following points.
 1. Sklearn Matrix
