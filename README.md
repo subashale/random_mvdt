@@ -8,6 +8,7 @@ In this project we try two different way of achieving linear separation on norma
 # Approach
 1. First we use normal deterministic way of to find coefficient based on RANSAC algorithm(rs_mvdt). https://en.wikipedia.org/wiki/Random_sample_consensus
 2. Second using logistic regression in cart decision tree(lr_mvdt). https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html
+3. Scikit-learn decision tree (cart). https://scikit-learn.org/stable/modules/tree.html
 
 # Random Feature selection
 In every inner nodes we use n number of feature to split data. Selection of features are different in every inner node but number of feature is same. This technique is used for both rs_mvdt and lr_mvdt.
@@ -27,20 +28,25 @@ n_features_list = [2, 5, 10, 20, all]
 #depth_list = [3, 6, 9, 12, 15]
 min_leaf_point_list = [5, 10, 15, 20, 30]
 
+making other setting default
+1. CART (criterion="entropy")
+2. LR_MVDT (logistic regression: solver='liblinear')
+3. RS_MVDT (impurity='entropy')
+
 # Evaluation
 Performance of above approch is compared with scikit-learn based decision tree based on following points.
-1. Sklearn Matrix
-  i. Accuracy
-  ii. Precision
-  iii. Recall
-  iv. F1
-2. Tree(model) information
-  i. Max depth
-  ii. Inner nodes
-  iii. leaf nodes
-  iv. all nodes
-3. Complexitity BigO
-
+1.Big0 (Time complexity): Algorithm performance
+2. Tree attributes
+  i.Max_depth, inner_nodes, leaf_nodes, all_nodes
+  ii. Average max depth, min depth
+3. Evaluation matrix(train/test)
+  i. Accuracy, precision, recall, f1
+  ii. Average of all
+4. Runtime: Training time
+5. Hyperparameter
+  i. N combination of features
+  ii. Epochs
+  iii. Min leaf point
 
 # Requirement
 This project can be run as script and jupyter notebook
