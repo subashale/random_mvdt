@@ -2,7 +2,8 @@
 from mvdts.call_algo import fit
 import pandas as pd
 import numpy as np
-
+from mvdts.dt_common.prediction import print_model,time_it
+from sklearn.metrics import accuracy_score
 
 def read_data(dataLocation):
     """
@@ -12,14 +13,14 @@ def read_data(dataLocation):
    """
     df = pd.read_csv(dataLocation)
 
-    X = np.array(df[df.columns[:-1]].values.tolist(), dtype=np.float64)
+    X = np.array(df[df.columns[:-1]].values.tolist())
     y = np.array(df[df.columns[-1]].values.tolist())
     return [X, y]
 
 
 data_location = "data/20ng_CG_RM/k1/final/"
-train_data = "10D_20ng_CG_RM_k1_train.csv"
-test_data = "10D_20ng_CG_RM_k1_test.csv"
+train_data = "30D_20ng_CG_RM_k1_train.csv"
+test_data = "30D_20ng_CG_RM_k1_test.csv"
 
 train = read_data(data_location+train_data)
 test = read_data(data_location+test_data)
@@ -27,7 +28,7 @@ test = read_data(data_location+test_data)
 # settings
 algorithm = "cart"
 epochs = 100
-depth = 3
+min_leaf_point = 5
 n_features = 5
 
 
@@ -57,18 +58,18 @@ def get_cart_model_info(model):
 for i in range(10):
     #fit(algorithm, train, epochs, depth, n_features)
     #print(print_tree(fit(algorithm, train, epochs, depth, n_features)))
-    #tree = fit(algorithm, train, epochs, depth, n_features)
-    #print(print_model(tree,  root_node = [], leaf_node = []))
-    #for tree
-    tree = fit(algorithm, train, epochs, depth, n_features)
-    # y_pred_test = predict(test[0], tree)
-    # y_pred_train = predict(train[0], tree)
+    #tree = fit(algorithm, train, epochs, min_leaf_point, n_features)
+    #print(print_model(tree,  root_node=[], leaf_node=[]))
 
-    # print("accuracy {}, {}".format(accuracy_score(train[1], y_pred_train), accuracy_score(test[1], y_pred_test)))
-    # print("\ntrain confusino matrix", len(train[1]), len(y_pred_train))
-    # print(confusion_matrix(train[1], y_pred_train))
-    # print("\ntest confusino matrix", len(test[1]), len(y_pred_test))
-    # print(confusion_matrix(test[1], y_pred_test))
+    # for cart
+    start_time = time_it()
+    tree = fit(algorithm, train, epochs, min_leaf_point, n_features)
+    end_time = time_it()
 
+    y_pred_test = tree.predict(test[0])
+    y_pred_train = tree.predict(train[0])
+
+    print("accuracy {}, {}, runtime: {}".format(accuracy_score(train[1], y_pred_train),
+                                                accuracy_score(test[1], y_pred_test), (end_time-start_time)))
     print(get_cart_model_info(tree))
 

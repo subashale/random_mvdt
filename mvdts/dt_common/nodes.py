@@ -1,7 +1,8 @@
 class DecisionNode:
     # left = 1/true and right = 0/false
     # store depth and node information in dictionary
-    def __init__(self, question, true_branch, false_branch, rows, indexes, left_instances, right_instances, depth):
+    def __init__(self, question, true_branch, false_branch, rows, indexes, left_instances, right_instances, depth,
+                 entropy):
         # question object stores col and val variables regarding the question of that node
         self.question = question  # question = theta
         # this stores the branch that is true
@@ -10,15 +11,18 @@ class DecisionNode:
         self.false_branch = false_branch
         # store split parts
         self.rows = rows
-        # store index of feature
+        # store index of features
         self.indexes = indexes
         # instance of each branch in [] or label distribution
         self.true_purity = left_instances
         self.false_purity = right_instances
+        # depth on each inner node
         self.depth = depth
+        # entropy of each inner node
+        self.entropy = entropy
 
 
-# Leaf class is the one whichs tores leaf of trees
+# Leaf class is the one which stores leaf of trees
 # it includes question as last decision boundary
 # and prediction is based on predict() on LR algo
 

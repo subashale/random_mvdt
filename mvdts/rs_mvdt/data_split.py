@@ -1,5 +1,5 @@
 import numpy as np
-from math import log2
+from mvdts.dt_common.common import entropy
 
 def pos_neg_giver(split_list):
     # all feature are in index 0 and 1 has class label
@@ -27,36 +27,8 @@ def partition(rows, pos_side, neg_side):
 
     return [Xl, yl], [Xr, yr], len(pos_side), len(neg_side)
 
-def check_purity(data):
-    """
-    counting occurance of each label on given data
-    :param data:
-    :return:
-    """
-    # # auto count any number of label
-    # return np.unique(data, return_counts=True)
-    #
-    # # then in called function
-    # for label, count in zip(unique[0], unique[1]):
-    #     print("label {}:{}".format(label, count))
-
-    return len(np.where(data > 0)[0]), len(np.where(data <= 0)[0])
-
-# for calculating entropy, this can be change based on requirement
-def entropy(a, b):
-    # a, b must have integer number
-
-    if a == 0:
-        return 0
-    elif b == 0:
-        return 0
-    else:
-        c = a + b
-        e = -(a/c) * log2(a/c) - (b/c) * log2(b/c);
-        return e
-
-# checking how many points are lies in both side with a line, only counting  no missclassification
-def check_positive_negative(points, label):
+# checking how many points are lies in both side with a line, only counting  no miss classification
+def count_positive_negative_point(points, label):
     point_positive = 0
     point_negative = 0
     
@@ -70,7 +42,7 @@ def check_positive_negative(points, label):
 
     return point_positive, point_negative
 
-
+0
 # split data with linear combination of feature
 
 def split_data(X, label, pos, neg, p, n):
@@ -132,8 +104,8 @@ def split_data(X, label, pos, neg, p, n):
     # checking miss classified points
     # we use pos_side, neg_side index to check on actual label
     # all the lies value are used on entropy calculation
-    point_pos_pos, point_pos_neg = check_positive_negative(pos_side[0], label)
-    point_neg_pos, point_neg_neg = check_positive_negative(neg_side[0], label)
+    point_pos_pos, point_pos_neg = count_positive_negative_point(pos_side[0], label)
+    point_neg_pos, point_neg_neg = count_positive_negative_point(neg_side[0], label)
 
     # print(point_pos_pos, point_pos_neg, point_neg_pos, point_neg_neg)
 

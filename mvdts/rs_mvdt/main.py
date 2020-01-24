@@ -5,7 +5,7 @@ import numpy as np
 # calling helper funtions
 from mvdts.rs_mvdt.data_split import split_data, pos_neg_giver
 from mvdts.dt_common.nodes import Leaf, DecisionNode
-from mvdts.dt_common.common import random_features_selection, check_purity, partition
+from mvdts.dt_common.common import random_features_selection, check_purity, partition, entropy
 
 
 def get_best(epochs, rand_x, label, pos, neg):
@@ -36,19 +36,22 @@ def get_best(epochs, rand_x, label, pos, neg):
                 best_theta = theta
         else:
             print(type(theta[0]), type(theta))
-            print("nan found in theta: {}, pos_side: {}, neg_side: {}, gain: {}".format(theta, pos_side, neg_side, gain))
+            print("nan found in theta: {}, pos_side: {}, neg_side: {}, gain: {}, epoch: {}"
+                  .format(theta, pos_side, neg_side, gain, epoch))
 
         # pred = current_prediction(best_theta, [rand_x, rows[1]])
 
     return best_pos_side, best_neg_side, best_theta
 
-def build_tree(rows, epochs, depth=0, max_depth=4, noOfFeature=2, min_point=20):
+def build_tree(rows, epochs, min_point, max_depth=0, depth=0, noOfFeature=2):
     # check for max depth of tree if yes then stop building
     label_1, label_0 = check_purity(rows[1])
-
-    if depth > max_depth:
-        print("depth {} reached, 1:{}, 0:{}".format(depth, label_1, label_0))
-        return Leaf(rows[-1].reshape(len(rows[0]), 1))
+    # if max depth is given
+    if max_depth != 0:
+        if depth > max_depth:
+            print("from max depth reached, depth {} reached, 1:{}, 0:{}, min_point: {}".format(depth, label_1, label_0,
+                                                                                               min_point))
+            return Leaf(rows[-1].reshape(len(rows[0]), 1))
 
     if label_1 > min_point and label_0 > min_point:
         # random feature pair selection, and host idx and rand_x
@@ -58,26 +61,41 @@ def build_tree(rows, epochs, depth=0, max_depth=4, noOfFeature=2, min_point=20):
         pos, neg = pos_neg_giver([rand_x, rows[1]])
         print(len(pos), len(neg))
 
-        pos_side, neg_side, theta, = get_best(epochs, rand_x, rows[1], pos, neg)
-        print(len(pos_side), len(neg_side), len(theta), type(theta))
+        pos_side, neg_side, theta = get_best(epochs, rand_x, rows[1], pos, neg)
+        #print(len(pos_side), len(neg_side), len(theta), type(theta))
         #viz_data_with_line_np(theta, rows)
 
-        true_rows, false_rows, left_count, right_count = partition(rows, pos_side, neg_side)
+        # separating left and right side data
+        true_rows, false_rows = partition(rows, pos_side, neg_side)
+
+        # entropy measure
+        e = entropy(len(pos_side), len(neg_side))
 
         # checking purity of each branch
         left_1, left_0 = check_purity(true_rows[-1])
         right_1, right_0 = check_purity(false_rows[-1])
-        print("depth {}, total rows:{} left branch labels [1={}, 0={}],right branch [1={}, 0={}]\n".format(depth, len(rows[0]),left_1, left_0, right_1, right_0))
+        print("depth {}, total rows:{} left branch labels [1={}, 0={}],right branch [1={}, 0={}]\n"
+              .format(depth, len(rows[0]),left_1, left_0, right_1, right_0))
 
-        true_branch = build_tree(rows=true_rows, epochs=epochs, depth=depth + 1, max_depth=max_depth,
-                                 noOfFeature=noOfFeature, min_point=20)
-        false_branch = build_tree(rows=false_rows, epochs=epochs, depth=depth + 1, max_depth=max_depth,
-                                  noOfFeature=noOfFeature, min_point=20)
-
-        return DecisionNode(theta, true_branch, false_branch, rows, idx, [left_1, left_0], [right_1, right_0], depth)
+        # while empty prediction on true and false branch, stopping criterion
+        # if there is no improvement or beyond data point prediction then
+        # this condition will take place
+        # if e == 0:
+        #     print("out of boundary decision", e)
+        #     print("from label min point, depth {} reached, 1:{}, 0:{}, min_point: {}"
+        #           .format(depth, label_1, label_0, min_point))
+        #     return Leaf(rows[-1].reshape(len(rows[0]), 1))
+        # else:
+        true_branch = build_tree(true_rows, epochs, min_point, depth=depth + 1,
+                                 noOfFeature=noOfFeature)
+        false_branch = build_tree(false_rows, epochs, min_point, depth=depth + 1,
+                                  noOfFeature=noOfFeature)
+        return DecisionNode(theta, true_branch, false_branch, rows, idx, [left_1, left_0], [right_1, right_0],
+                            depth, e)
 
     else:
-        print("depth {} reached, 1:{}, 0:{}".format(depth, label_1, label_0))
+        print("from label min point, depth {} reached, 1:{}, 0:{}, min_point: {}"
+              .format(depth, label_1, label_0, min_point))
         return Leaf(rows[-1].reshape(len(rows[0]), 1))
 
 

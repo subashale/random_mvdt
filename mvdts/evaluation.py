@@ -1,63 +1,123 @@
 import os.path
 import pandas as pd
-from mvdts.dt_common.prediction import print_model, predict
+from mvdts.dt_common.prediction import print_model, predict, time_it
 from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_score, confusion_matrix
 from mvdts.call_algo import fit
 import numpy as np
+import _pickle as pickle
 
-def evaluation(dataset, filename, k_fold, d2v_vec_size, algorithm, epochs, depth, n_features, run, train_data, test_data):
 
+def evaluation(dataset_name, pkl_location, filename, k_fold, d2v_vec_size, algorithm, epochs, min_leaf_point, n_features
+               , run, train_data, test_data):
     print("Fitting on, dataset: {}, filename: {}, k_fold: {}, vector_size: {},"
-          " algorithm: {}, epochs: {}, depth: {}, n_feature: {}, run: {}, train_data_shape: {}".format(
-        dataset, filename, k_fold, d2v_vec_size, algorithm, epochs, depth, n_features, run, str(train_data[0].shape)
-    ))
+          " algorithm: {}, epochs: {}, depth: {}, n_feature: {}, run: {}, train_data_shape: {}".format(dataset_name,
+        filename, k_fold, d2v_vec_size, algorithm, epochs, min_leaf_point, n_features, run, str(train_data[0].shape)))
 
-    tree = fit(algorithm, train_data, epochs, depth, n_features)
+    start_time = time_it()
+    tree = fit(algorithm, train_data, epochs, min_leaf_point, n_features)
+    end_time = time_it()
+    runtime = end_time - start_time
+
     # getting tree information
     if algorithm == "lr_mvdt" or algorithm == "rs_mvdt":
-        inner_node, leaf_node, all_nodes, max_depth = get_mvdt_model_info(tree)
+        # storing tree in pickle file
+        # take file name
+        pkl_filename = filename[0].split("/")[-1].split(".")[0]+'_'+algorithm+'_'+str(epochs)+'_'+str(min_leaf_point)+\
+                       '_'+str(n_features)+'_'+str(run)+'_.pkl'
+        with open(pkl_location + pkl_filename, 'wb') as save_tree:
+            pickle.dump(tree, save_tree)
+        # getting model information
+        inner_node, leaf_node, all_nodes, max_depth, left_size, right_size = get_mvdt_model_info(tree)
     else:
-        inner_node, leaf_node, all_nodes, max_depth = get_cart_model_info(tree)
+        pkl_filename = filename[0].split("/")[-1].split(".")[0]+'_'+algorithm+'_'+str(min_leaf_point)+'_'+str(run)+\
+                       '_.pkl'
+        with open(pkl_location + pkl_filename, 'wb') as save_tree:
+            pickle.dump(tree, save_tree)
+        # getting model information
+        # counting left_size, right_size is not finish yet
+        inner_node, leaf_node, all_nodes, max_depth, left_size, right_size = get_cart_model_info(tree)
+
+    model_location_name = pkl_location + pkl_filename
     # storing all results
-    store_results(dataset, filename, k_fold, d2v_vec_size, algorithm, epochs, depth, n_features, run, train_data,
-                  test_data, tree, max_depth, inner_node, leaf_node, all_nodes)
+    store_results(dataset_name, filename, k_fold, d2v_vec_size, algorithm, epochs, min_leaf_point, n_features, run,
+                  train_data, test_data, tree, max_depth, inner_node, leaf_node, all_nodes, left_size, right_size,
+                  runtime, model_location_name)
 
     print("--------- model evaluation information saved --------- ")
 
+
 def get_cart_model_info(model):
-    inner_node = model.tree_.node_count
+    all_nodes = model.tree_.node_count
 
-    # getting leaf nodes https://notebooks.gesis.org/binder/jupyter/user/scikit-learn-scikit-learn-pw3uja99/lab
-    children_left = model.tree_.children_left
-    children_right = model.tree_.children_right
-
-    is_leaves = np.zeros(shape=inner_node, dtype=bool)
-    stack = [(0, -1)]  # seed is the root node id and its parent depth
-    while len(stack) > 0:
-        node_id, parent_depth = stack.pop()
-        # If we have a test node
-        if (children_left[node_id] != children_right[node_id]):
-            stack.append((children_left[node_id], parent_depth + 1))
-            stack.append((children_right[node_id], parent_depth + 1))
-        else:
-            is_leaves[node_id] = True
-    leaf_node = len(np.where(is_leaves == True)[0])
-    all_nodes = inner_node+leaf_node
+    leaf_node = model.tree_.n_leaves
+    inner_node = all_nodes - leaf_node
     max_depth = model.tree_.max_depth
 
-    return inner_node, leaf_node, all_nodes, max_depth
+    # find out left and right branch nodes
+    left_size = 0
+    right_size = 0
+
+    return inner_node, leaf_node, all_nodes, max_depth, left_size, right_size
 
 
 def get_mvdt_model_info(model):
     n_nodes, max_depth, leaf_nodes = print_model(model, root_node=[], leaf_node=[])
     # root decision node includes all nodes(lr) and leaf decision nodes
-    inner_node = len(n_nodes - 1)  # it includes root node so -1 to count leaf node
+    inner_node = len(n_nodes) - 1  # it includes root node so -1 to count leaf node
     leaf_node = len(leaf_nodes)
     all_nodes = inner_node + leaf_node
+    left_size, right_size = tree_left_right_size(n_nodes)
+    return inner_node, leaf_node, all_nodes, max_depth, left_size, right_size
 
-    return inner_node, leaf_node, all_nodes, max_depth
+# left and right branch inner node count
+def tree_left_right_size(inner_nodes):
+    # getting all inner nodes from left and right branch
+    idx = []
+    print(inner_nodes)
+    for i, v in enumerate(inner_nodes):
+        # getting 1 1 initial depth
+        # if index 1 find out which branch is it left or right
+        # if first index is 1 then left else right
+        if v[1] == 1:
+            idx.append([i, v[2]])
 
-def store_results(dataset, filename, k_fold, dim, algorithm, epochs, depth, n_features, run, train_data, test_data, model, max_depth, inner_node, leaf_node, all_nodes):
+    # check root node has decision node then put 0 and count inner_nodes-1 for right side
+    # left skew [[1, 'l']], right skew [[1, 'r']]
+    if len(idx) == 1:
+        # pure left is skew
+        if idx[0][1] == 'l':
+            print("l: ", idx[0], idx[0][1])
+            left = len(inner_nodes)-1
+            right = 0
+        # pure right is skew
+        elif idx[0][1] == 'r':
+            print("r: ", idx[0], idx[0][1])
+            left = 0
+            right = len(inner_nodes) - 1
+        # nothing there
+        else:
+            left = 0
+            right = 0
+    elif len(idx) == 2:
+        # use second position depth to separate data, with ndarray
+        # eg [[1, 'l'], [9, 'r']]
+        print("2", idx, len(idx))
+        left = len(inner_nodes[1:idx[1][0]])
+        right = len(inner_nodes[idx[1][0]:])
+    elif len(idx) == 0:
+        print("0", idx, len(idx))
+        left = 0
+        right = 0
+    else:
+        left = 0
+        right = 0
+    return left, right
+
+
+
+def store_results(dataset, filename, k_fold, dim, algorithm, epochs, min_leaf_point, n_features, run, train_data,
+                  test_data, model, max_depth, inner_node, leaf_node, all_nodes, left_size, right_size, runtime,
+                  pkl_location_name):
     # result of train/test matrix
     if algorithm == "lr_mvdt" or algorithm == "rs_mvdt":
         # model evaluation on training data
@@ -67,55 +127,73 @@ def store_results(dataset, filename, k_fold, dim, algorithm, epochs, depth, n_fe
     else:
         y_pred_train = model.predict(train_data[0])
         y_pred_test = model.predict(test_data[0])
- # result data in dictionary for both test and train sets
+    # result data in dictionary for both test and train sets
 
-    new_result = {'dataset': str(dataset),  # name of dataset
-                  'filename': str(filename),  # dataset file name
-                  'k_fold': str(k_fold),  # which K_fold number
-                  'd2v_vec_size': str(dim),  # dod2vec feature dimension
-                  'algorithm': str(algorithm),  # algorithm name
-                  'epochs': str(epochs),  # no of epochs
-                  'depth': str(depth),  # given dpeth of tree
-                  'feature_size': str(n_features),  # how may features are taken
-                  'run': str(run),  # which iteration we set 10 times
-                  'd2v_shape': str([train_data[0].shape, test_data[0].shape]),  # d2v feature shape both
-                  'accuracy': str([accuracy_score(train_data[1], y_pred_train), accuracy_score(test_data[1], y_pred_test)]),  # accuracy of both train and test
-                  'precision': str([precision_score(train_data[1], y_pred_train), precision_score(test_data[1], y_pred_test)]),  # precision of both train and test
-                  'recall': str([recall_score(train_data[1], y_pred_train), recall_score(test_data[1], y_pred_test)]),  # recall of both train and test
-                  'f1': str([f1_score(train_data[1], y_pred_train), f1_score(test_data[1], y_pred_test)]),  # f1 of both train and test
-                  'confusion_matrix': str([confusion_matrix(train_data[1], y_pred_train), confusion_matrix(test_data[1], y_pred_test)]), # to see each class prediction
-                  'max_depth': str(max_depth),  # max depth from model
-                  'inner_node': str(inner_node),  # no of decision nodes (root+inner)
-                  'leaf_node': str(leaf_node),  # no of predicted nodes (decision node)
-                  'all_node': str(all_nodes),  # sum of inner_node and all_node
+    new_result = {'dataset': dataset,  # name of dataset
+                  'filename': filename,  # dataset file name
+                  'k_fold': k_fold,  # which K_fold number
+                  'd2v_vec_size': dim,  # dod2vec feature dimension
+                  'algorithm': algorithm,  # algorithm name
+                  'epochs': epochs,  # no of epochs
+                  'min_leaf_point': min_leaf_point,  # given depth of tree
+                  'feature_size': n_features,  # how may features are taken
+                  'd2v_shape': np.array([list(train_data[0].shape), list(test_data[0].shape)]),  # d2v feature shape both
+                  'run': run,  # which iteration we set 10 times
+                  'accuracy': np.array([accuracy_score(train_data[1], y_pred_train), accuracy_score(test_data[1],
+                                                                                                    y_pred_test)]),
+                  # accuracy of both train and test
+                  'precision': np.array([precision_score(train_data[1], y_pred_train), precision_score(test_data[1],
+                                                                                                       y_pred_test)]),
+                  # precision of both train and test
+                  'recall': np.array([recall_score(train_data[1], y_pred_train), recall_score(test_data[1],
+                                                                                              y_pred_test)]),
+                  # recall of both train and test
+                  'f1': np.array([f1_score(train_data[1], y_pred_train), f1_score(test_data[1], y_pred_test)]),
+                  # f1 of both train and test
+                  'confusion_matrix': np.array([list(confusion_matrix(train_data[1], y_pred_train)),
+                                                list(confusion_matrix(test_data[1], y_pred_test))]),
+                  # to see each class prediction
+                  'max_depth': max_depth,  # max depth from model
+                  'inner_node': inner_node,  # no of decision nodes (root+inner)
+                  'leaf_node': leaf_node,  # no of predicted nodes (decision node)
+                  'all_node': all_nodes,  # sum of inner_node and all_node
+                  'train_true_predict': str([list(train_data[1]), list(y_pred_train)]),  # training true and predicted value
+                  'test_true_predict': str([list(test_data[1]), list(y_pred_test)]),  # test true and predicted
+                  'branch_sizes': str([left_size, right_size]),  # left and right branch inner nodes
+                  'training_time': runtime,  # training time
+                  'pkl_location_name': pkl_location_name  # tree model name and location
                   }
-    insert_result(new_result)
+
+    df_new_result = pd.DataFrame().append(new_result, ignore_index=True)
+    insert_result(df_new_result)
 
 
 def insert_result(new_result):
-
     filename = "results.csv"
     file_exists = os.path.isfile(filename)
 
-    # if file not exits create a csv file then insert new result
+
     if not file_exists:
         print("csv file is created")
-        # create csv file
+
         df_create_result = pd.DataFrame(
-            columns=['dataset', 'filename', 'k_fold', 'd2v_vec_size', 'algorithm', 'epochs', 'depth', 'run', 'd2v_shape',
-                     'feature_size', 'accuracy', 'precision', 'recall', 'f1', 'confusion_matrix', 'max_depth', 'inner_node', 'leaf_node',
-                     'all_node'])
+            columns=['dataset', 'filename', 'k_fold', 'd2v_vec_size', 'algorithm', 'epochs', 'min_leaf_point',
+                     'feature_size', 'd2v_shape', 'run', 'accuracy', 'precision', 'recall', 'f1', 'confusion_matrix',
+                     'max_depth', 'inner_node', 'leaf_node', 'all_node', 'train_true_predict', 'test_true_predict',
+                     'branch_sizes', 'training_time', 'pkl_location_name'])
+
         df_create_result.to_csv(filename, index=None)
 
     # insert new result
     df_results = pd.read_csv(filename)
-    df_new_result = pd.DataFrame(new_result, index=[len(df_results) + 1])
-    # df_new_result = pd.DataFrame(new_result, index =[df_results['sn'].tolist()[-1]+1])
+
+    # finding new row index for inserting new data
+    #df_new_result = pd.DataFrame().append(new_result)
+    #df_new_result = pd.DataFrame(new_result, index =[df_results['sn'].tolist()[-1]+1])
+    #type(df_new_result.d2v_shape)
 
     # now adding new row by concatenating data frame
-    df_results = pd.concat([df_results, df_new_result], sort=False)
+    df_results = pd.concat([df_results, new_result], sort=False)
 
-    # do something else
-    df_results.to_csv(filename, index=None)
-
-    #return df_results
+    # save result
+    df_results.to_csv(filename, sep=',', index=None)

@@ -1,6 +1,33 @@
 import random
 import numpy as np
+from math import log2
 
+# for calculating entropy, this can be change based on requirement
+def entropy(a, b):
+    # a, b must have integer number
+    if a == 0:
+        return 0
+    elif b == 0:
+        return 0
+    else:
+        c = a + b
+        e = -(a/c) * log2(a/c) - (b/c) * log2(b/c)
+        return e
+
+# checking how many points are lies in both side with a line, only counting  no miss classification
+def count_positive_negative_point(points, label):
+    point_positive = 0
+    point_negative = 0
+
+    for i in points:
+        if label[i] == 1:
+            point_positive = point_positive + 1
+        elif label[i] == 0:
+            point_negative = point_negative + 1
+        else:
+            print(label[i])
+
+    return point_positive, point_negative
 
 # for both lrdt , rmvdt
 def random_features_selection(features, noOfFeature=2, typeOfRandom=1):
@@ -44,6 +71,7 @@ def random_features_selection(features, noOfFeature=2, typeOfRandom=1):
 
     return featureIndexes, noOfFeature, typeOfRandom, np.column_stack(newFeatureSet)
 
+# checking how many 0 and 1 exits in given data
 def check_purity(data):
     """
     counting occurance of each label on given data
@@ -59,6 +87,7 @@ def check_purity(data):
 
     return len(np.where(data > 0)[0]), len(np.where(data <= 0)[0])
 
+# Partition of data in two branch with 0 and 1
 def partition(rows, pos_side, neg_side):
     # get the index of each 0 and 1 rows from predict function
 
@@ -71,4 +100,4 @@ def partition(rows, pos_side, neg_side):
     Xr = rows[0][neg_side]
     yr = rows[-1][neg_side]
 
-    return [Xl, yl], [Xr, yr], len(pos_side), len(neg_side)
+    return [Xl, yl], [Xr, yr]
