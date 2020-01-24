@@ -1,0 +1,6 @@
+K fold data split duration: 0.0
+D2V training and embeddings duration: 0.0010018348693847656
+lr and rs mvdt training duration: 472.90375208854675
+Cart training duration: 1.9824943542480469
+cart + lr and rs duration: 474.8862464427948
+Total duration: 474.8872482776642
