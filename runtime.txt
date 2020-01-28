@@ -1,0 +1,21 @@
+
+
+Experiment on: 28/01/2020 13:38:39
+
+K fold data split duration: 0.0
+D2V training and embeddings duration: 0.0
+lr and rs mvdt training duration: 377.91173672676086
+Cart training duration: 9.727203607559204
+cart + lr and rs duration: 387.63894033432007
+Total duration: 387.63894033432007
+*******************************************************************
+
+Experiment on: 28/01/2020 13:50:16
+
+K fold data split duration: 0.0
+D2V training and embeddings duration: 0.0
+lr and rs mvdt training duration: 0.4640941619873047
+Cart training duration: 0.43108415603637695
+cart + lr and rs duration: 0.8951783180236816
+Total duration: 0.8951783180236816
+*******************************************************************
