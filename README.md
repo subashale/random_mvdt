@@ -47,6 +47,11 @@ Performance of above approch is compared with scikit-learn based decision tree b
 	1. N combination of features
 	2. Epochs
 	3. Min leaf point
+6. Tree depth base evaluation
+	1. accuracy, depth
+	2. accuracy, tree attributes
+	3. accuracy, hyperparameters settings
+	
 
 # Requirement
 This project can be run as script and jupyter notebook
