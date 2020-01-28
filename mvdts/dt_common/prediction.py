@@ -70,9 +70,8 @@ def print_model(node, indentation="", pos='', root_node=[], leaf_node=[]):
         #     root_node.append([sum, node.depth])
         root_node.append([sum, node.depth, pos])
         # showing depth, theta and entropy for each inner nodes
-        print(indentation + "depth: " + str(node.depth)+str(node.question)+str(node.entropy))
-
-        # print(indentation + "depth: " + str(node.depth) + str(len(node.question)))
+        print(indentation + "depth: " + str(node.depth)+" entropy: "+str(node.entropy))
+        #print(indentation + "depth: " + str(node.depth)+str(node.question)+str(node.entropy))
 
         # call the function on true branch, l and r are indication for storing in branch
         print(indentation + "Left Branch " + str(node.true_purity))
@@ -87,7 +86,7 @@ def print_model(node, indentation="", pos='', root_node=[], leaf_node=[]):
     return np.array(root_node), find_depth(root_node), leaf_node
 
 # print depth wise tree
-def print_model_depth(node, depth, indentation="", root_node=[], leaf_node=[]):
+def print_model_depth(node, depth, indentation="", pos='', root_node=[], leaf_node=[]):
     # if the node object is of leaf type
     if isinstance(node, Leaf):
         leaf_node.append(np.array([node.predictions]))
@@ -97,17 +96,19 @@ def print_model_depth(node, depth, indentation="", root_node=[], leaf_node=[]):
         if depth >= int(node.depth):
             sum = np.add(np.array(node.true_purity), np.array(node.false_purity))
 
-            root_node.append([sum, node.depth])
+            root_node.append([sum, node.depth, pos])
             # showing depth, theta and entropy for each inner nodes
             print(indentation + "depth: " + str(node.depth)+" entropy: "+str(node.entropy))
 
             # call the function on true branch
             print(indentation + "Left Branch " + str(node.true_purity))
-            print_model_depth(node.true_branch, depth, indentation + "-->", root_node, leaf_node)
+            print_model_depth(node.true_branch, depth, indentation + "-->", 'l', root_node, leaf_node)
+            #print_model_depth(node.true_branch, depth, indentation + "-->", root_node, leaf_node)
 
             # on false branch
             print(indentation + "Right Branch " + str(node.false_purity))
-            print_model_depth(node.false_branch, depth, indentation + "-->", root_node, leaf_node)
+            print_model_depth(node.false_branch, depth, indentation + "-->", 'r', root_node, leaf_node)
+            #print_model_depth(node.false_branch, depth, indentation + "-->", root_node, leaf_node)
         return np.array(root_node), find_depth(root_node), leaf_node
 
 # getting max depth
@@ -202,7 +203,7 @@ def classify_depth(x_point, model, depth=1):
                 return classify_depth(x_point, model.true_branch, depth)
             else:
                 return classify_depth(x_point, model.false_branch, depth)
-        print("from inner node: {}".format(r))
+        #print("from inner node: {}".format(r))
 
         if r > 0:
             r = 1

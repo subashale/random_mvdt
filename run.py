@@ -1,4 +1,6 @@
 import os
+from datetime import datetime
+import logging
 import numpy as np
 import pandas as pd
 # for preparing dataset and d2v features
@@ -57,7 +59,7 @@ def hell_run(datasets, k, vector_sizes, algorithms_list, epochs_list , n_feature
                                 # choose max depth of tree
                                 for min_leaf_point in min_leaf_point_list:
                                     # run 10 times to get average result
-                                    for run in range(10):
+                                    for run in range(1):
                                         total += 1
                                         # print(name, algorithm, n, dim, df_train, df_test, epochs, n_features, depth)
                                         if n_features == all:
@@ -115,19 +117,19 @@ if __name__ == '__main__':
     # settings
     # datasets = "2newgroup,imbd,quora"
     # k = 5 #20%test
-    # vector_sizes = [30, 60, 90, 120, 150]
+    # vector_sizes = [10, 25, 50, 75, 100]
     # algorithms_list = ['lr_mvdt', 'rs_mvdt']
     # epochs_list = [100, 300, 500, 800, 1000]
     # n_features_list = [2, 5, 10, 20, all]  # should below min vector_size
-    # #depth_list = [3, 6, 9, 12, 15]
+    # depth_list = [3, 6, 9, 12, 15]
     # min_leaf_point_list = [5, 10, 15, 20, 30]
 
-    datasets = "20ng_CG_RM,20newsgroup"
+    datasets = "20ng_CG_RM,20newsgroup"#"imdb"
     k = 2
-    vector_sizes = [30]
+    vector_sizes = [10, 25]
     algorithms_list = ['lr_mvdt', 'rs_mvdt']
-    epochs_list = [50]
-    n_features_list = [2, 15, all]
+    epochs_list = [50, 100]
+    n_features_list = [2, all]
     min_leaf_point_list = [5]
 
     # splitting kfold sets
@@ -149,17 +151,29 @@ if __name__ == '__main__':
     print("*-*-*-*-*- Starting on Lr_mvdt and rs_mvdt -*-*-*-*-*")
     hell_run(datasets, k, vector_sizes, algorithms_list, epochs_list, n_features_list, min_leaf_point_list)
     lrrs_mdvt_end = time_it()
+
     print("*-*-*-*-*- Starting on sklearn cart -*-*-*-*-*")
     sk_cart(datasets, k, vector_sizes, min_leaf_point_list)
     cart_end = time_it()
     print("**************** Finish, check results.csv ****************")
 
     # write text timing in text file
-    f = open("timing.txt", "w+")
-    f.write("K fold data split duration: " + str(k_fold_end-kick_start))
-    f.write("\nD2V training and embeddings duration: " + str(d2v_end-k_fold_end))
-    f.write("\nlr and rs mvdt training duration: " + str(lrrs_mdvt_end-d2v_end))
-    f.write("\nCart training duration: " + str(cart_end-lrrs_mdvt_end))
-    f.write("\ncart + lr and rs duration: " + str(cart_end-d2v_end))
-    f.write("\nTotal duration: " + str(cart_end-kick_start))
-    f.close()
+    time_measure = 'runtime.txt'
+
+    mode = 'a+' if os.path.exists(time_measure) else 'w+'
+    with open(time_measure, mode) as f:
+        now = datetime.now()
+        # dd/mm/YY H:M:S
+        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+
+        f.write("\n\nExperiment on: "+ dt_string+"\n\n")
+
+        # f = open("timing.txt", "w+")
+        f.write("K fold data split duration: " + str(k_fold_end-kick_start))
+        f.write("\nD2V training and embeddings duration: " + str(d2v_end-k_fold_end))
+        f.write("\nlr and rs mvdt training duration: " + str(lrrs_mdvt_end-d2v_end))
+        f.write("\nCart training duration: " + str(cart_end-lrrs_mdvt_end))
+        f.write("\ncart + lr and rs duration: " + str(cart_end-d2v_end))
+        f.write("\nTotal duration: " + str(cart_end-kick_start))
+        f.write("\n*******************************************************************")
+        # f.close()
