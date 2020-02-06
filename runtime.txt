@@ -19,3 +19,89 @@ Cart training duration: 0.43108415603637695
 cart + lr and rs duration: 0.8951783180236816
 Total duration: 0.8951783180236816
 *******************************************************************
+
+Experiment on: 28/01/2020 16:49:46
+
+K fold data split duration: 0.0
+D2V training and embeddings duration: 0.0
+lr and rs mvdt training duration: 664.1974127292633
+Cart training duration: 33.220412731170654
+cart + lr and rs duration: 697.417825460434
+Total duration: 697.417825460434
+*******************************************************************
+
+Experiment on: 02/02/2020 23:55:23
+
+K fold data split duration: 0.0
+D2V training and embeddings duration: 0.0
+lr and rs mvdt training duration: 0.22661542892456055
+Cart training duration: 0.0
+cart + lr and rs duration: 0.22661542892456055
+Total duration: 0.22661542892456055
+*******************************************************************
+
+Experiment on: 02/02/2020 23:57:24
+
+K fold data split duration: 0.0
+D2V training and embeddings duration: 0.0
+lr and rs mvdt training duration: 0.3111748695373535
+
+Experiment on: 02/02/2020 23:58:37
+
+K fold data split duration: 0.0
+D2V training and embeddings duration: 0.0
+lr and rs mvdt training duration: 0.15909862518310547
+Cart training duration: 0.0
+cart + lr and rs duration: 0.15909862518310547
+Total duration: 0.15909862518310547
+*******************************************************************
+
+Experiment on: 03/02/2020 00:05:13
+
+K fold data split duration: 0.0
+D2V training and embeddings duration: 0.0
+lr and rs mvdt training duration: 0.2291576862335205
+Cart training duration: 0.0
+cart + lr and rs duration: 0.2291576862335205
+Total duration: 0.2291576862335205
+*******************************************************************
+
+Experiment on: 03/02/2020 10:25:17
+
+K fold data split duration: 0.0
+D2V training and embeddings duration: 0.0
+lr and rs mvdt training duration: 0.6171588897705078
+Cart training duration: 0.0
+cart + lr and rs duration: 0.6171588897705078
+Total duration: 0.6171588897705078
+*******************************************************************
+
+Experiment on: 03/02/2020 10:26:10
+
+K fold data split duration: 0.0
+D2V training and embeddings duration: 0.0
+lr and rs mvdt training duration: 0.42022705078125
+Cart training duration: 0.3999814987182617
+cart + lr and rs duration: 0.8202085494995117
+Total duration: 0.8202085494995117
+*******************************************************************
+
+Experiment on: 03/02/2020 10:27:32
+
+K fold data split duration: 0.0
+D2V training and embeddings duration: 0.0
+lr and rs mvdt training duration: 0.66231369972229
+Cart training duration: 0.48801088333129883
+cart + lr and rs duration: 1.1503245830535889
+Total duration: 1.1503245830535889
+*******************************************************************
+
+Experiment on: 04/02/2020 02:04:21
+
+K fold data split duration: 0.0
+D2V training and embeddings duration: 0.0
+lr and rs mvdt training duration: 55848.23655962944
+Cart training duration: 316.7816593647003
+cart + lr and rs duration: 56165.01821899414
+Total duration: 56165.01821899414
+*******************************************************************

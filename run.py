@@ -59,7 +59,7 @@ def hell_run(datasets, k, vector_sizes, algorithms_list, epochs_list , n_feature
                                 # choose max depth of tree
                                 for min_leaf_point in min_leaf_point_list:
                                     # run 10 times to get average result
-                                    for run in range(1):
+                                    for run in range(10):
                                         total += 1
                                         # print(name, algorithm, n, dim, df_train, df_test, epochs, n_features, depth)
                                         if n_features == all:
@@ -130,7 +130,7 @@ if __name__ == '__main__':
     algorithms_list = ['lr_mvdt', 'rs_mvdt']
     epochs_list = [50, 100]
     n_features_list = [2, all]
-    min_leaf_point_list = [5]
+    min_leaf_point_list = [5, 10]
 
     # splitting kfold sets
 
@@ -145,7 +145,6 @@ if __name__ == '__main__':
     #buidling_d2v_kfold(datasets, k, vector_sizes)
     d2v_end = time_it()
     print("**************** datasets are prepared and saved ****************")
-
     # Model training
     print("**************** model training start ****************")
     print("*-*-*-*-*- Starting on Lr_mvdt and rs_mvdt -*-*-*-*-*")

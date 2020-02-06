@@ -18,6 +18,7 @@ def create_dir_model(location, new_folder_name):
 
 def evaluation(dataset_name, data_location, filename, k_fold, d2v_vec_size, algorithm, epochs, min_leaf_point,
                n_features, run, train_data, test_data):
+
     print("Fitting on, dataset: {}, filename: {}, k_fold: {}, vector_size: {},"
           " algorithm: {}, epochs: {}, depth: {}, n_feature: {}, run: {}, train_data_shape: {}".format(dataset_name,
         filename, k_fold, d2v_vec_size, algorithm, epochs, min_leaf_point, n_features, run, str(train_data[0].shape)))
