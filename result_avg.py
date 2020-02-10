@@ -16,6 +16,7 @@ epochs_list = [50, 100]
 n_features_list = [2, all]
 min_leaf_point_list = [5, 10]
 
+# use this to make by_param corelation to accuracy
 by_list = [['by_n_features', '$feature_size'],
            ['by_min_leaf_points', '$min_leaf_point'],
            ['by_epochs', '$epochs'],
@@ -33,6 +34,7 @@ def avg_by_all():
 
 
 def get_avg_by(*argv):
+    # consider only test results but for now its ok just query for index 1
     # getting training and testing average for each by_param list
     query = [
         {'$match': {'dataset': argv[0], 'algorithm': argv[1]}
@@ -50,18 +52,25 @@ def get_avg_by(*argv):
     ]
 
     d = db.result.aggregate(query)
-    for i in d:
+    for result in d:
+        #del result['_id']
+        # result['avg_accuracy'] = [result['train_acc'], result['test_acc']]
+        # result['avg_precision'] = [result['train_pre'], result['test_pre']]
+        # result['avg_recall'] = [result['train_rec'], result['test_rec']]
+        # result['f1'] = [result['train_f1'], result['test_f1']]
+        #
         new_result = {'dataset': argv[0],  # name of dataset
                       'algorithm': argv[1],  # algorithm name
-                      argv[-1][0]: i['_id'],  # no of epochs
-                      'count': i['count'],  # total rows taken
-                      'accuracy': [i['train_acc'], i['test_acc']],
-                      'precision': [i['train_pre'], i['test_pre']],  # precision of both train and test
-                      'recall': [i['train_rec'], i['test_rec']],  # recall of both train and test
-                      'f1': [i['train_f1'], i['test_f1']]
+                      argv[-1][0]: result['_id'],  # no of epochs
+                      'count': result['count'],  # total rows taken
+                      'accuracy': [result['train_acc'], result['test_acc']],
+                      'precision': [result['train_pre'], result['test_pre']],  # precision of both train and test
+                      'recall': [result['train_rec'], result['test_rec']],  # recall of both train and test
+                      'f1': [result['train_f1'], result['test_f1']]
                       }
 
         # inserting in mongodb
+
         collection_name = db[str(argv[-1][0])]
         collection_name.insert_one(new_result)
         # saving in to json
@@ -92,12 +101,14 @@ def save_results(new_data, isfrom):
 
 # get min and max accuracy result on train and test set
 #accuracy.0: train, accuracy.1: test, -1:max, +1:min
+#consider only test results
 
 
 def min_max_by_dataset():
     # get min max a by_param and store that feature as well, choosing by_param gives same result since all setting are
     # document information
     # get best, and worst evaluation setting result for each dataset
+    # query for only on_data=testing for final result
     for dataset in datasets.split(","):
         for i in range(2):
             if i == 0:
@@ -407,12 +418,12 @@ def min_max_by_min_leaf_point():
 
 if __name__ == '__main__':
     # output datasets *algorithm*by_pram
-    #avg_by_all()
-    min_max_by_dataset()
-    min_max_by_algo()
-    min_max_by_k_fold()
-    min_max_by_dim()
-    min_max_by_epochs()
-    min_max_by_fet_size()
-    min_max_by_min_leaf_point()
+    avg_by_all()
+    # min_max_by_dataset()
+    # min_max_by_algo()
+    # min_max_by_k_fold()
+    # min_max_by_dim()
+    # min_max_by_epochs()
+    # min_max_by_fet_size()
+    # min_max_by_min_leaf_point()
 
