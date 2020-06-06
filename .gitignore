@@ -3,3 +3,4 @@
 *.iml
 *.gitignore
 /.ipynb_checkpoints/
+*.csv
