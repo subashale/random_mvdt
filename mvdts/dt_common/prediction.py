@@ -173,7 +173,7 @@ def classify(x_point, model):
 
         # recursive approach to find out leaf decision
         # look for branch only if it is not leaf node it self
-        if r > 0:
+        if r >= 0:
             return classify(x_point, model.true_branch)
         else:
             return classify(x_point, model.false_branch)
@@ -199,13 +199,13 @@ def classify_depth(x_point, model, depth=1):
         pt = np.append(x_point[model.indexes], 1)
         r = model.question.T.dot(pt)
         if depth > int(model.depth):
-            if r > 0:
+            if r >= 0:
                 return classify_depth(x_point, model.true_branch, depth)
             else:
                 return classify_depth(x_point, model.false_branch, depth)
         #print("from inner node: {}".format(r))
 
-        if r > 0:
+        if r >= 0:
             r = 1
         else:
             r = 0
